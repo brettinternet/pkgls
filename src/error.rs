@@ -26,9 +26,9 @@ error_chain! {
             description("unsupported output format"),
             display("Unsupported output format '{}'", input)
         }
-        InterruptionStdErr(error: String) {
-            description("interruption from stderr"),
-            display("Interruption from stderr: {}", error),
+        InterruptedManager(error: String) {
+            description("interruption from package manager"),
+            display("Interruption from package manager:\n{}", error),
         }
     }
 }
