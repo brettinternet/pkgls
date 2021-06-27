@@ -67,21 +67,6 @@ impl Log for CliLogger {
     fn flush(&self) {}
 }
 
-/// Match log level with filter enum
-pub fn filter_level_value(level: &str) -> LevelFilter {
-    match level {
-        "off" => LevelFilter::Off,
-        "debug" => LevelFilter::Debug,
-        "info" => LevelFilter::Info,
-        "warn" => LevelFilter::Warn,
-        "error" => LevelFilter::Error,
-        _ => {
-            warn!("Unrecognized log level, falling back to default");
-            LevelFilter::Error
-        }
-    }
-}
-
 /// No flag -> off
 ///
 /// Single flag -> error

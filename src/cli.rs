@@ -1,4 +1,4 @@
-use crate::logger::{filter_level_occurences, filter_level_value};
+use crate::logger::filter_level_occurences;
 use clap::{App, AppSettings, Arg, ArgMatches};
 use log::LevelFilter;
 use std::env;
@@ -39,21 +39,15 @@ impl Cli {
                 Arg::new("program")
                     .short('p')
                     .long("program")
-                    .possible_value("pacman")
+                    // .possible_value("pacman")
                     .about("Explicitly set which package manager to use"),
             )
             .arg(
                 Arg::new("log")
                     .short('l')
                     .long("log")
-                    .default_value("off")
-                    .possible_value("off")
-                    .possible_value("error")
-                    .possible_value("warn")
-                    .possible_value("info")
-                    .possible_value("debug")
-                    .conflicts_with("quiet")
                     .multiple_occurrences(true)
+                    .conflicts_with("quiet")
                     .about("Set a log level"),
             )
             .arg(
@@ -104,8 +98,6 @@ impl Cli {
     pub fn get_log_level(&self) -> LevelFilter {
         if self.get_quiet() {
             LevelFilter::Off
-        } else if let Some(level) = self.matches.value_of("log") {
-            filter_level_value(level)
         } else {
             let count = self.matches.occurrences_of("log");
             filter_level_occurences(count)
