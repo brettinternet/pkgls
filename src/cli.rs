@@ -1,8 +1,4 @@
-use crate::{
-    config::OutputFormat,
-    error::*,
-    logger::{filter_level_occurences, filter_level_value},
-};
+use crate::logger::{filter_level_occurences, filter_level_value};
 use clap::{App, AppSettings, Arg, ArgMatches};
 use log::LevelFilter;
 use std::env;
@@ -18,6 +14,7 @@ pub struct Cli {
 }
 
 impl Cli {
+    /// TODO: support -u uninstall, -i install, -e explicitly installed filter, -v use versions
     pub fn new() -> Self {
         let color = env::var_os("NO_COLOR").is_none();
         let cli_color_setting = if color {
@@ -30,32 +27,32 @@ impl Cli {
             .version("0.1.0")
             // .license("MIT") // unreleased
             .global_setting(cli_color_setting)
-            // .global_setting(AppSettings::DeriveDisplayOrder)
-            // .global_setting(AppSettings::UnifiedHelpMessage)
-            // .global_setting(AppSettings::HidePossibleValuesInHelp)
-            // .setting(AppSettings::ArgsNegateSubcommands)
-            // .setting(AppSettings::AllowExternalSubcommands)
-            // .setting(AppSettings::DisableHelpSubcommand)
-            // .setting(AppSettings::VersionlessSubcommands)
+            .global_setting(AppSettings::UnifiedHelpMessage)
+            .setting(AppSettings::ArgsNegateSubcommands)
+            .setting(AppSettings::DisableHelpSubcommand)
+            .setting(AppSettings::VersionlessSubcommands)
             .max_term_width(100)
             .author("Brett (https://github.com/brettinternet/pkgls)")
             .about("List installed packages")
-            .arg(
-                Arg::new("output")
-                    .about("Sets an optional output file")
-                    .index(1),
-            )
+            .arg(Arg::new("FILE").about("Filename to write package names"))
             .arg(
                 Arg::new("program")
                     .short('p')
                     .long("program")
-                    .about("Set which package manager to use"),
+                    .possible_value("pacman")
+                    .about("Explicitly set which package manager to use"),
             )
             .arg(
                 Arg::new("log")
                     .short('l')
                     .long("log")
                     .default_value("off")
+                    .possible_value("off")
+                    .possible_value("error")
+                    .possible_value("warn")
+                    .possible_value("info")
+                    .possible_value("debug")
+                    .conflicts_with("quiet")
                     .multiple_occurrences(true)
                     .about("Set a log level"),
             )
@@ -63,12 +60,14 @@ impl Cli {
                 Arg::new("quiet")
                     .short('q')
                     .long("quiet")
-                    .about("Silence stdout"),
+                    .conflicts_with("log")
+                    .about("Silence stdout and stderr"),
             )
-            .subcommand(
-                App::new("print")
-                    .about("Print package list to stdout")
-                    .arg(Arg::new("list").short('l').about("lists test values")),
+            .arg(
+                Arg::new("force")
+                    .short('f')
+                    .long("force")
+                    .about("Force overwrite a file that already exists"),
             );
 
         let matches = app.get_matches();
@@ -88,6 +87,15 @@ impl Cli {
         self.matches.value_of("quiet").is_some()
     }
 
+    /// Force
+    ///
+    /// Force overwriting target file
+    ///
+    /// bool whether force is requested
+    pub fn get_force(&self) -> bool {
+        self.matches.value_of("force").is_some()
+    }
+
     /// Log level
     ///
     /// Supported log levels are off, debug, info, warn and error
@@ -104,40 +112,8 @@ impl Cli {
         }
     }
 
-    /// Output format
-    ///
-    /// Defaults to Stdout
-    pub fn get_output_format<'a>(&'a self) -> Result<OutputFormat> {
-        // You can check the value provided by positional arguments, or option arguments
-        match self.matches.value_of("output") {
-            Some(o) if o.to_lowercase() == OutputFormat::Stdout.to_string().to_lowercase() => {
-                Ok(OutputFormat::Stdout)
-            }
-            None => {
-                debug!("using default output of '{}'", OutputFormat::Stdout);
-                Ok(OutputFormat::Stdout)
-            }
-            Some(o) => Err(ErrorKind::UnsupportedOutputFormat(o.to_string()).into()),
-        }
+    /// Output filename
+    pub fn get_file(&self) -> Option<&str> {
+        self.matches.value_of("file")
     }
-
-    // pub fn get_other<'a>(&'a mut self) {
-    //     if let Some(c) = self.matches.value_of("config") {
-    //         println!("Value for config: {}", c);
-    //     }
-
-    //     // You can check for the existence of subcommands, and if found use their
-    //     // matches just as you would the top level app
-    //     if let Some(ref matches) = self.matches.subcommand_matches("test") {
-    //         // "$ myapp test" was run
-    //         if matches.is_present("list") {
-    //             // "$ myapp test -l" was run
-    //             println!("Printing testing lists...");
-    //         } else {
-    //             println!("Not printing testing lists...");
-    //         }
-    //     }
-
-    //     // Continued program logic goes here...
-    // }
 }
