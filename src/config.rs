@@ -1,31 +1,25 @@
 use log::LevelFilter;
-use std::fmt::{Display, Formatter, Result as FmtResult};
 
-#[derive(Debug, Clone, Copy)]
-pub enum OutputFormat {
-    /// Print output to console
-    Stdout,
-    // Format to txt file
-    // Txt,
-}
+use crate::io::{Input, Output};
 
-impl Display for OutputFormat {
-    fn fmt(&self, f: &mut Formatter) -> FmtResult {
-        write!(f, "{:?}", self)
-    }
-}
-
+/// App interface
 #[derive(Debug)]
-pub struct Config {
+pub struct Config<'a> {
     /// Log level
     pub log_level: LevelFilter,
 
     /// Silence all output
     pub quiet: bool,
 
-    /// Output format type
-    pub output_format: OutputFormat,
+    /// Whether to force writing target file
+    pub force: bool,
 
     /// If output should be colorized
     pub color: bool,
+
+    /// Output
+    pub output: Output<'a>,
+
+    /// Input
+    pub input: Option<Input<'a>>,
 }

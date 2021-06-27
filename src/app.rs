@@ -1,43 +1,37 @@
-use crate::cli::Cli;
 use crate::config::Config;
 use crate::controller::Controller;
 use crate::error::*;
 use crate::logger::CliLogger;
-use crate::pkg::Pkg;
 
-pub struct App {
+pub struct App<'a> {
     pub controller: Controller,
-    pub cli: Cli,
+    pub config: Config<'a>,
 }
 
-impl App {
-    fn new(config: Config, cli: Cli) -> Result<Self> {
-        let pkg = Pkg::init()?;
-        let controller = Controller::new(config, pkg)?;
-        let app = Self { controller, cli };
+impl<'a> App<'a> {
+    pub fn new(config: Config<'a>) -> Result<Self> {
+        let controller = Controller::new()?;
+        let app = Self { controller, config };
         Ok(app)
     }
 
-    pub fn init(cli: Cli) -> Result<bool> {
-        let config = Config {
-            quiet: cli.get_quiet(),
-            log_level: cli.get_log_level(),
-            output_format: cli.get_output_format()?,
-            color: cli.color,
-        };
+    pub fn init(&self) -> Result<bool> {
+        self.init_logger();
 
-        match CliLogger::init(&config) {
-            Err(_) => println!("Unable to initialize logging"),
-            _ => (),
-        };
+        self.controller.write(self.config.output);
 
-        let app = Self::new(config, cli)?;
-
-        if let Some(installed) = app.controller.pkg.installed {
-            println!("Manager: {}", app.controller.pkg.manager.kind);
+        if let Some(installed) = &self.controller.pkg.installed {
+            println!("Manager: {}", self.controller.pkg.manager.kind);
             println!("Installed: {:?}", installed);
         }
 
         Ok(true)
+    }
+
+    fn init_logger(&self) {
+        match CliLogger::init(&self.config) {
+            Err(_) => println!("Failed to initialize logging"),
+            _ => (),
+        };
     }
 }
