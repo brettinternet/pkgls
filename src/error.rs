@@ -41,7 +41,7 @@ pub fn default_error_handler(error: &Error, output: &mut dyn Write) {
             ::std::process::exit(0);
         }
         _ => {
-            writeln!(output, "{:?}", error).ok();
+            writeln!(output, "{}", error).ok();
         }
     };
 }
