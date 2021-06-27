@@ -22,10 +22,6 @@ error_chain! {
             description("packages not found")
             display("Packages were not found for {}", manager)
         }
-        UnsupportedOutputFormat(input: String) {
-            description("unsupported output format"),
-            display("Unsupported output format '{}'", input)
-        }
         InterruptedManager(error: String) {
             description("interruption from package manager"),
             display("Interruption from package manager:\n{}", error),
