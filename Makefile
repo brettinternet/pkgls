@@ -1,5 +1,4 @@
 #!make
-# TODO: https://stackoverflow.com/a/33594470/6817437
 .PHONY: start setup clean lint
 
 start:
@@ -14,3 +13,6 @@ clean:
 test:
 	@cargo clippy
 	@cargo test
+
+build:
+	@cargo build
