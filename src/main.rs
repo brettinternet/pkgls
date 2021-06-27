@@ -16,9 +16,9 @@ mod manager;
 mod pkg;
 
 fn main() {
-    // let cli = Cli::new();
-    let quiet = false;
-    let app = App::init(Cli::new());
+    let cli = Cli::new();
+    let quiet = cli.get_quiet();
+    let app = App::init(cli);
 
     match app {
         Err(error) => {

@@ -40,13 +40,8 @@ pub fn default_error_handler(error: &Error, output: &mut dyn Write) {
         {
             ::std::process::exit(0);
         }
-        Error(ErrorKind::Io(ref io_error), _)
-            if io_error.kind() == ::std::io::ErrorKind::BrokenPipe =>
-        {
-            error!("")
-        }
         _ => {
-            error!("{:?}", error);
+            writeln!(output, "{:?}", error).ok();
         }
     };
 }
