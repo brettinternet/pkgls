@@ -17,6 +17,9 @@ pub struct Config<'a> {
     /// If output should be colorized
     pub color: bool,
 
+    /// Package manager program
+    pub program: Option<&'a str>,
+
     /// Output
     pub output: Output<'a>,
 

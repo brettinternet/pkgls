@@ -34,11 +34,22 @@ impl Cli {
             .max_term_width(100)
             .author("Brett (https://github.com/brettinternet/pkgls)")
             .about("List installed packages")
-            .arg(Arg::new("FILE").about("Filename to write package names"))
+            .arg(
+                Arg::new("output")
+                    .index(1)
+                    .about("Filename to write package names"),
+            )
+            .arg(
+                Arg::new("force")
+                    .short('f')
+                    .long("force")
+                    .about("Force overwrite the output if it already exists"),
+            )
             .arg(
                 Arg::new("program")
                     .short('p')
                     .long("program")
+                    .takes_value(true)
                     // .possible_value("pacman")
                     .about("Explicitly set which package manager to use"),
             )
@@ -46,9 +57,10 @@ impl Cli {
                 Arg::new("log")
                     .short('l')
                     .long("log")
+                    .takes_value(false)
                     .multiple_occurrences(true)
                     .conflicts_with("quiet")
-                    .about("Set a log level"),
+                    .about("Increment a log level"),
             )
             .arg(
                 Arg::new("quiet")
@@ -56,20 +68,12 @@ impl Cli {
                     .long("quiet")
                     .conflicts_with("log")
                     .about("Silence stdout and stderr"),
-            )
-            .arg(
-                Arg::new("force")
-                    .short('f')
-                    .long("force")
-                    .about("Force overwrite a file that already exists"),
             );
 
-        let matches = app.get_matches();
-
-        #[cfg(debug_assertions)]
-        debug!("Matches: {:?}", matches);
-
-        Self { matches, color }
+        Self {
+            matches: app.get_matches(),
+            color,
+        }
     }
 
     /// Quiet
@@ -105,7 +109,12 @@ impl Cli {
     }
 
     /// Output filename
-    pub fn get_file(&self) -> Option<&str> {
-        self.matches.value_of("file")
+    pub fn get_output(&self) -> Option<&str> {
+        self.matches.value_of("output")
+    }
+
+    /// Package manager program
+    pub fn get_program(&self) -> Option<&str> {
+        self.matches.value_of("program")
     }
 }

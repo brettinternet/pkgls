@@ -31,6 +31,7 @@ fn main() {
         quiet,
         force: cli.get_force(),
         color: cli.color,
+        program: cli.get_program(),
         output: Output::new(cli.get_output()),
         input: None, // Not supported yet
     };

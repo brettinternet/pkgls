@@ -87,14 +87,24 @@ impl Manager {
     }
 
     /// Set manager kind
-    pub fn set_kind<'a>(&'a mut self, kind: ManagerKind) -> &'a mut Self {
+    fn set_kind<'a>(&'a mut self, kind: ManagerKind) -> &'a mut Self {
         self.kind = kind;
+        self.cmd = get_cmd(kind);
         self
     }
 
-    /// Get the manager kind from input
-    pub fn get_kind(self, input: &str) -> Result<ManagerKind> {
-        ManagerKind::from_str(input)
-            .map_err(|_| ErrorKind::UnsupportedManager(input.to_string()).into())
+    /// Configure the manager kind from input
+    pub fn configure_kind(&mut self, input: &str) -> Result<ManagerKind> {
+        match ManagerKind::from_str(input) {
+            Ok(kind) => {
+                self.set_kind(kind);
+                Ok(kind)
+            }
+            Err(_) => Err(ErrorKind::UnsupportedManager(
+                input.to_string(),
+                self.kind.to_string().to_lowercase(),
+            )
+            .into()),
+        }
     }
 }

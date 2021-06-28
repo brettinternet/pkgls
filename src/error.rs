@@ -14,17 +14,17 @@ error_chain! {
             description("unable to detect package manager"),
             display("Unable to detect package manager for {}", target)
         }
-        UnsupportedManager(input: String) {
+        UnsupportedManager(input: String, detected: String) {
             description("unsupported package manager"),
-            display("Unsupported package manager '{}'", input)
-        }
-        PackagesNotFound(manager: String) {
-            description("packages not found")
-            display("Packages were not found for {}", manager)
+            display("Unsupported package manager '{}', however found '{}'", input, detected)
         }
         InterruptedManager(error: String) {
             description("interruption from package manager"),
             display("Interruption from package manager:\n{}", error),
+        }
+        PackagesNotFound(manager: String) {
+            description("packages not found")
+            display("Packages were not found for {}", manager)
         }
     }
 }
