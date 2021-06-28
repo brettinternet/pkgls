@@ -43,6 +43,7 @@ impl Cli {
                 Arg::new("force")
                     .short('f')
                     .long("force")
+                    .requires("output")
                     .about("Force overwrite the output if it already exists"),
             )
             .arg(
