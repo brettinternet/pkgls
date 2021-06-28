@@ -3,6 +3,9 @@ use super::{Installed, ListInstalled};
 use crate::error::*;
 use std::process::Command;
 
+/// Pacman for Arch Linux
+///
+/// Docs: https://wiki.archlinux.org/title/Pacman
 #[derive(Debug)]
 pub struct PacmanCmd {
     program: &'static str,
