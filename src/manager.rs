@@ -103,9 +103,13 @@ impl Manager {
             }
             Err(_) => Err(ErrorKind::UnsupportedManager(
                 input.to_string(),
-                self.kind.to_string().to_lowercase(),
+                self.get_kind_lowercase(),
             )
             .into()),
         }
+    }
+
+    pub fn get_kind_lowercase(&self) -> String {
+        self.kind.to_string().to_lowercase()
     }
 }

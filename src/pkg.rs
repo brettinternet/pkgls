@@ -27,9 +27,7 @@ impl Pkg {
 
         match pkg.installed {
             Some(_) => Ok(pkg),
-            None => {
-                Err(ErrorKind::PackagesNotFound(pkg.manager.kind.to_string().to_lowercase()).into())
-            }
+            None => Err(ErrorKind::PackagesNotFound(pkg.manager.get_kind_lowercase()).into()),
         }
     }
 

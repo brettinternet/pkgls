@@ -25,7 +25,8 @@ impl<'a> App<'a> {
     }
 
     pub fn init(&self) -> Result<bool> {
-        self.controller.write(self.config.output);
+        self.controller
+            .dump(self.config.output, self.config.force)?;
         Ok(true)
     }
 }
