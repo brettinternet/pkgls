@@ -63,6 +63,7 @@ fn is_program_in_path(program: &str) -> bool {
 /// Determine manager based on common programs available in $PATH
 fn get_manager_kind() -> Result<ManagerKind> {
     if is_program_in_path("pacman") {
+        debug!("Detected {} package manager", "pacman");
         Ok(ManagerKind::Pacman)
     } else {
         Err(ErrorKind::UndetectedManager(env::consts::OS.to_string()).into())

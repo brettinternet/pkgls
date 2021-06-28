@@ -10,12 +10,12 @@ pub struct App<'a> {
 
 impl<'a> App<'a> {
     pub fn new(config: Config<'a>) -> Result<Self> {
-        #[cfg(debug_assertions)]
-        println!("config: {:?}", config);
         match CliLogger::init(&config) {
             Err(_) => println!("Failed to initialize logging"),
             _ => (),
         };
+        #[cfg(debug_assertions)]
+        debug!("config: {:?}", config);
         let mut controller = Controller::new()?;
         if let Some(program) = config.program {
             controller.pkg.manager.configure_kind(program)?;
@@ -26,12 +26,6 @@ impl<'a> App<'a> {
 
     pub fn init(&self) -> Result<bool> {
         self.controller.write(self.config.output);
-
-        if let Some(installed) = &self.controller.pkg.installed {
-            println!("Manager: {}", self.controller.pkg.manager.kind);
-            println!("Installed: {:?}", installed);
-        }
-
         Ok(true)
     }
 }
