@@ -82,7 +82,7 @@ impl Cli {
     ///
     /// bool whether output should be silenced
     pub fn get_quiet(&self) -> bool {
-        self.matches.value_of("quiet").is_some()
+        self.matches.is_present("quiet")
     }
 
     /// Force
@@ -91,7 +91,7 @@ impl Cli {
     ///
     /// bool whether force is requested
     pub fn get_force(&self) -> bool {
-        self.matches.value_of("force").is_some()
+        self.matches.is_present("force")
     }
 
     /// Log level
