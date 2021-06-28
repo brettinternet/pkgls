@@ -36,6 +36,8 @@ impl<'a> Output<'a> {
     }
 }
 
+/// TODO: implement input
+#[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub enum InputFormat {
     /// Print output to console
@@ -60,6 +62,8 @@ pub struct Input<'a> {
     pub filename: Option<&'a str>,
 }
 
+/// TODO: implement input
+#[allow(dead_code)]
 impl<'a> Input<'a> {
     pub fn new(filename: Option<&'a str>) -> Self {
         Self {
@@ -104,6 +108,8 @@ fn parse_output_format(filename: Option<&str>) -> OutputFormat {
     }
 }
 
+/// TODO: implement input
+#[allow(dead_code)]
 fn parse_input_format(filename: Option<&str>) -> InputFormat {
     match (filename, get_extension_from_filename(filename)) {
         (Some(_), Some("txt")) => {
