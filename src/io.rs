@@ -78,35 +78,55 @@ fn get_extension_from_filename(filename: Option<&str>) -> Option<&str> {
 }
 
 fn parse_output_format(filename: Option<&str>) -> OutputFormat {
-    match get_extension_from_filename(filename) {
-        Some("txt") => {
+    match (filename, get_extension_from_filename(filename)) {
+        (Some(_), Some("txt")) => {
             debug!("Using txt extension found in output filename");
             OutputFormat::Txt
         }
-        None => {
+        (Some(filename), Some(ext)) => {
+            warn!(
+                "Unsupported output format '{}' for output argument '{}', defaulting to plain text",
+                ext, filename
+            );
+            OutputFormat::Txt
+        }
+        (Some(filename), None) => {
+            info!(
+                "No extension found for output argument '{}', defaulting to plain text",
+                filename
+            );
+            OutputFormat::Txt
+        }
+        (None, _) => {
             debug!("Missing output filename extension, defaulting to stdout");
             OutputFormat::Stdout
-        }
-        Some(ext) => {
-            warn!("Unsupported output format '{}' for <FILE> argument", ext);
-            OutputFormat::Txt
         }
     }
 }
 
 fn parse_input_format(filename: Option<&str>) -> InputFormat {
-    match get_extension_from_filename(filename) {
-        Some("txt") => {
+    match (filename, get_extension_from_filename(filename)) {
+        (Some(_), Some("txt")) => {
             debug!("Using txt extension found in input filename");
             InputFormat::Txt
         }
-        None => {
+        (Some(filename), Some(ext)) => {
+            warn!(
+                "Unsupported output format '{}' for <FILE> argument '{}', defaulting to plain text",
+                ext, filename
+            );
+            InputFormat::Txt
+        }
+        (Some(filename), None) => {
+            info!(
+                "No extension found for output argument '{}', defaulting to plain text",
+                filename
+            );
+            InputFormat::Txt
+        }
+        (None, _) => {
             debug!("Missing input filename extension, defaulting to stdin");
             InputFormat::Stdin
-        }
-        Some(ext) => {
-            warn!("Unsupported output format '{}' for <FILE> argument", ext);
-            InputFormat::Txt
         }
     }
 }
