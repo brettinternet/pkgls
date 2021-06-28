@@ -35,7 +35,7 @@ impl Cli {
             .author("Brett (https://github.com/brettinternet/pkgls)")
             .about("List installed packages")
             .arg(
-                Arg::new("output")
+                Arg::new("OUTPUT")
                     .index(1)
                     .about("Filename to write package names"),
             )
@@ -43,7 +43,7 @@ impl Cli {
                 Arg::new("force")
                     .short('f')
                     .long("force")
-                    .requires("output")
+                    .requires("OUTPUT")
                     .about("Force overwrite the output if it already exists"),
             )
             .arg(

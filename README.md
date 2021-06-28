@@ -8,8 +8,20 @@ Supported package managers include:
 
 ## Usage
 
-```sh
-pkgls -h
+```
+USAGE:
+    pkgls [OPTIONS] [OUTPUT]
+
+ARGS:
+    <OUTPUT>    Filename to write package names
+
+OPTIONS:
+    -f, --force                Force overwrite the output if it already exists
+    -h, --help                 Prints help information
+    -l, --log                  Increment a log level
+    -p, --program <program>    Explicitly set which package manager to use
+    -q, --quiet                Silence stdout and stderr
+    -V, --version              Prints version information
 ```
 
 ## Develop
