@@ -1,3 +1,4 @@
+use crate::app::Procedure;
 use crate::logger::filter_level_occurences;
 use clap::{App, AppSettings, Arg, ArgMatches};
 use log::LevelFilter;
@@ -35,18 +36,6 @@ impl Cli {
             .author("Brett (https://github.com/brettinternet/pkgls)")
             .about("List installed packages")
             .arg(
-                Arg::new("OUTPUT")
-                    .index(1)
-                    .about("Filename to write package names"),
-            )
-            .arg(
-                Arg::new("force")
-                    .short('f')
-                    .long("force")
-                    .requires("OUTPUT")
-                    .about("Force overwrite the output if it already exists"),
-            )
-            .arg(
                 Arg::new("program")
                     .short('p')
                     .long("program")
@@ -69,11 +58,59 @@ impl Cli {
                     .long("quiet")
                     .conflicts_with("log")
                     .about("Silence stdout and stderr"),
+            )
+            .subcommand(
+                App::new("list")
+                    .about("List installed packages or save to file")
+                    .arg(
+                        Arg::new("OUTPUT")
+                            .index(1)
+                            .about("Filename to write package names"),
+                    )
+                    .arg(
+                        Arg::new("force")
+                            .short('f')
+                            .long("force")
+                            .requires("OUTPUT")
+                            .about("Force overwrite the output if it already exists"),
+                    ),
             );
 
-        Self {
-            matches: app.get_matches(),
-            color,
+        let matches = app.get_matches();
+        Self { matches, color }
+    }
+
+    /// Subcommand procedure
+    ///
+    /// Derive the procedure from the subcommands
+    pub fn get_procedure(&self) -> Procedure {
+        if self.matches.is_present("add") {
+            Procedure::List
+        } else {
+            debug!("Running 'list' subcommand by default");
+            Procedure::List
+        }
+    }
+
+    /// Output filename
+    pub fn get_output(&self) -> Option<&str> {
+        if let Some(list_matches) = self.matches.subcommand_matches("list") {
+            list_matches.value_of("output")
+        } else {
+            None
+        }
+    }
+
+    /// Force
+    ///
+    /// Force overwriting target file
+    ///
+    /// bool whether force is requested
+    pub fn get_force(&self) -> bool {
+        if let Some(list_matches) = self.matches.subcommand_matches("list") {
+            list_matches.is_present("force")
+        } else {
+            false
         }
     }
 
@@ -84,15 +121,6 @@ impl Cli {
     /// bool whether output should be silenced
     pub fn get_quiet(&self) -> bool {
         self.matches.is_present("quiet")
-    }
-
-    /// Force
-    ///
-    /// Force overwriting target file
-    ///
-    /// bool whether force is requested
-    pub fn get_force(&self) -> bool {
-        self.matches.is_present("force")
     }
 
     /// Log level
@@ -107,11 +135,6 @@ impl Cli {
             let count = self.matches.occurrences_of("log");
             filter_level_occurences(count)
         }
-    }
-
-    /// Output filename
-    pub fn get_output(&self) -> Option<&str> {
-        self.matches.value_of("output")
     }
 
     /// Package manager program

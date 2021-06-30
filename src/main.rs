@@ -32,6 +32,7 @@ fn main() {
         force: cli.get_force(),
         color: cli.color,
         program: cli.get_program(),
+        procedure: cli.get_procedure(),
         output: Output::new(cli.get_output()),
         input: None, // Not supported yet
     };

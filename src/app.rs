@@ -3,6 +3,11 @@ use crate::controller::Controller;
 use crate::error::*;
 use crate::logger::CliLogger;
 
+#[derive(Debug)]
+pub enum Procedure {
+    List,
+}
+
 pub struct App<'a> {
     pub controller: Controller,
     pub config: Config<'a>,
@@ -25,8 +30,12 @@ impl<'a> App<'a> {
     }
 
     pub fn init(&self) -> Result<bool> {
-        self.controller
-            .dump(self.config.output, self.config.force)?;
+        match self.config.procedure {
+            Procedure::List => self
+                .controller
+                .dump(self.config.output, self.config.force)?,
+        }
+
         Ok(true)
     }
 }

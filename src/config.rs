@@ -1,3 +1,4 @@
+use crate::app::Procedure;
 use log::LevelFilter;
 
 use crate::io::{Input, Output};
@@ -19,6 +20,9 @@ pub struct Config<'a> {
 
     /// Package manager program
     pub program: Option<&'a str>,
+
+    /// Procedural action to commit
+    pub procedure: Procedure,
 
     /// Output
     pub output: Output<'a>,
