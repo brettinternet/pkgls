@@ -1,5 +1,9 @@
 # pkgls
 
+[![Clippy](https://github.com/brettinternet/pkgls/actions/workflows/clippy.yml/badge.svg)](https://github.com/brettinternet/pkgls/actions/workflows/clippy.yml)
+[![Test](https://github.com/brettinternet/pkgls/actions/workflows/test.yml/badge.svg)](https://github.com/brettinternet/pkgls/actions/workflows/test.yml)
+[![Audit](https://github.com/brettinternet/pkgls/actions/workflows/audit.yml/badge.svg)](https://github.com/brettinternet/pkgls/actions/workflows/audit.yml)
+
 List installed packages.
 
 Supported package managers include:
