@@ -10,18 +10,18 @@ Supported package managers include:
 
 ```
 USAGE:
-    pkgls [OPTIONS] [OUTPUT]
-
-ARGS:
-    <OUTPUT>    Filename to write package names
+    pkgls [OPTIONS]
+    pkgls <SUBCOMMAND>
 
 OPTIONS:
-    -f, --force                Force overwrite the output if it already exists
     -h, --help                 Prints help information
     -l, --log                  Increment a log level
     -p, --program <program>    Explicitly set which package manager to use
     -q, --quiet                Silence stdout and stderr
     -V, --version              Prints version information
+
+SUBCOMMANDS:
+    list    List installed packages or save to file
 ```
 
 ## Develop
