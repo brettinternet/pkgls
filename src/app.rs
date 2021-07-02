@@ -31,11 +31,15 @@ impl<'a> App<'a> {
 
     pub fn init(&self) -> Result<bool> {
         match self.config.procedure {
-            Procedure::List => self
-                .controller
-                .dump(self.config.output, self.config.force)?,
+            Procedure::List => {
+                if let Some(output) = self.config.output {
+                    self.controller.dump(output, self.config.force)?;
+                    Ok(true)
+                } else {
+                    error!("Missing output file from list subcommand");
+                    Ok(false)
+                }
+            }
         }
-
-        Ok(true)
     }
 }

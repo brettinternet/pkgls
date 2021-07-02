@@ -25,7 +25,7 @@ pub struct Config<'a> {
     pub procedure: Procedure,
 
     /// Output
-    pub output: Output<'a>,
+    pub output: Option<Output<'a>>,
 
     /// Input
     pub input: Option<Input<'a>>,
