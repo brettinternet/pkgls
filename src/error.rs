@@ -26,6 +26,10 @@ error_chain! {
             description("packages not found")
             display("Packages were not found for {}", manager)
         }
+        CustomError(message: &'static str) {
+            description(message),
+            display("{}", message),
+        }
     }
 }
 
