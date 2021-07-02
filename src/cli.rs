@@ -40,7 +40,7 @@ impl Cli {
                     .short('p')
                     .long("program")
                     .takes_value(true)
-                    // .possible_value("pacman")
+                    .possible_values(&["pacman"])
                     .about("Explicitly set which package manager to use"),
             )
             .arg(
