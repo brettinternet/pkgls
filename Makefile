@@ -2,7 +2,7 @@
 .PHONY: start setup clean lint
 
 start:
-	@PKGLS_LOG=debug cargo watch -x run
+	@PKGLS_LOG=debug cargo watch -x build
 
 setup:
 	@cargo install cargo-watch
