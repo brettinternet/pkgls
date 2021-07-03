@@ -1,12 +1,18 @@
-use crate::cmd::Installed;
+use crate::cmd::{Installed, PackageList};
 use crate::error::*;
 use crate::manager::Manager;
 
 /// Package manager and associated data
 #[derive(Debug)]
 pub struct Pkg {
+    /// Interface for a package manager and associated cmds
     pub manager: Manager,
+
+    /// List of installed packages evaluated immediately at runtime
     pub installed: Option<Installed>,
+
+    /// List of missing packages evaluted from input lists
+    pub missing: Option<PackageList>,
 }
 
 impl Pkg {
@@ -14,6 +20,7 @@ impl Pkg {
         let pkg = Self {
             manager: Manager::new()?,
             installed: None,
+            missing: None,
         };
 
         Ok(pkg)
@@ -31,8 +38,75 @@ impl Pkg {
         }
     }
 
+    pub fn update_installed(&mut self) -> Result<()> {
+        let installed = self.manager.cmd.list_installed()?;
+        self.set_installed(installed);
+        Ok(())
+    }
+
     fn set_installed<'a>(&'a mut self, installed: Option<Vec<String>>) -> &'a mut Self {
         self.installed = installed;
         self
+    }
+
+    pub fn eval_difference(&mut self, list: Vec<String>) {
+        let missing = if let Some(installed) = self.installed.clone() {
+            list.into_iter()
+                .filter(|item| !installed.contains(item))
+                .collect()
+        } else {
+            list
+        };
+        self.set_missing(Some(missing));
+    }
+
+    fn set_missing<'a>(&'a mut self, missing: Option<PackageList>) -> &'a mut Self {
+        self.missing = missing;
+        self
+    }
+
+    pub fn install_missing(&mut self, list: Vec<String>) -> Result<()> {
+        self.eval_difference(list.clone());
+        match self.missing.clone() {
+            Some(missing) if !missing.is_empty() => match self.manager.cmd.install(missing.clone())
+            {
+                Ok(_) => {
+                    info!("Successfully installed packages: {}", missing.join(" "));
+                    Ok(())
+                }
+                Err(_) => {
+                    info!(
+                        "Checking installed packages to determine which packages failed to install"
+                    );
+                    self.update_installed()?;
+                    self.eval_difference(list.clone());
+                    match self.missing.clone() {
+                        Some(missing) if missing.len() == list.len() => {
+                            debug!("No missing packages were installed");
+                            Err(
+                                ErrorKind::InterruptedManager("Installation cancelled".into())
+                                    .into(),
+                            )
+                        }
+                        Some(missing) if !missing.is_empty() => {
+                            warn!("Cannot find missing packages after the attempted installation");
+                            Err(ErrorKind::FailedManager(format!(
+                                "Failed to install packages: {}",
+                                missing.join(" ")
+                            ))
+                            .into())
+                        }
+                        _ => {
+                            warn!("Cannot find missing packages");
+                            Err(ErrorKind::InterruptedManager("Installation failed".into()).into())
+                        }
+                    }
+                }
+            },
+            _ => {
+                warn!("No missing packages found to install");
+                Ok(())
+            }
+        }
     }
 }

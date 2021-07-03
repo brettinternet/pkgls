@@ -5,7 +5,7 @@ use crate::app::{App, Procedure};
 use crate::cli::Cli;
 use crate::error::{default_error_handler, Result};
 use config::Config;
-use io::Output;
+use io::{Input, Output};
 use std::process;
 
 mod app;
@@ -27,8 +27,9 @@ fn main() {
     let cli = Cli::new();
     let quiet = cli.get_quiet();
     let procedure = cli.get_procedure();
-    let output = match procedure {
-        Procedure::List => Some(Output::new(cli.get_output())),
+    let (input, output): (Option<Input>, Option<Output>) = match procedure {
+        Procedure::List => (None, cli.get_output()),
+        Procedure::Install => (cli.get_input(), None),
     };
     let config = Config {
         log_level: cli.get_log_level(),
@@ -38,8 +39,9 @@ fn main() {
         program: cli.get_program(),
         procedure,
         output,
-        input: None, // Not supported yet
+        input,
     };
+    println!("config: {:?}", config);
 
     match run(config) {
         Err(error) => {

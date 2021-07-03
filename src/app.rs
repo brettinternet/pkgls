@@ -6,6 +6,7 @@ use crate::logger::CliLogger;
 #[derive(Debug)]
 pub enum Procedure {
     List,
+    Install,
 }
 
 pub struct App<'a> {
@@ -29,14 +30,23 @@ impl<'a> App<'a> {
         Ok(app)
     }
 
-    pub fn init(&self) -> Result<bool> {
+    pub fn init(&mut self) -> Result<bool> {
         match self.config.procedure {
             Procedure::List => {
-                if let Some(output) = self.config.output {
+                if let Some(output) = &self.config.output {
                     self.controller.dump(output, self.config.force)?;
                     Ok(true)
                 } else {
                     error!("Missing output file from list subcommand");
+                    Ok(false)
+                }
+            }
+            Procedure::Install => {
+                if let Some(input) = &self.config.input {
+                    self.controller.install(input)?;
+                    Ok(true)
+                } else {
+                    error!("Missing input file from install subcommand");
                     Ok(false)
                 }
             }

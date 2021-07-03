@@ -22,6 +22,10 @@ error_chain! {
             description("interruption from package manager"),
             display("Interruption from package manager:\n{}", error),
         }
+        FailedManager(error: String) {
+            description("interruption from package manager"),
+            display("Package manager exited:\n{}", error),
+        }
         PackagesNotFound(manager: String) {
             description("packages not found")
             display("Packages were not found for {}", manager)
