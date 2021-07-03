@@ -12,7 +12,25 @@ impl<'a> Output<'a> {
         Self { cmd, program }
     }
 
-    pub fn read(&'a mut self) -> Result<Option<Vec<String>>> {
+    /// Interactive commands that require input
+    pub fn interact(&'a mut self) -> std::result::Result<(), std::io::Error> {
+        let cmd = self.cmd.spawn()?;
+        let out = cmd.wait_with_output()?;
+        if out.status.success() {
+            debug!("Interactive {} command successful", self.program);
+            Ok(())
+        } else {
+            error!(
+                "{} command failed with exit code {:?}",
+                self.program,
+                out.status.code()
+            );
+            use std::io::{Error, ErrorKind};
+            Err(Error::new(ErrorKind::Other, out.status.to_string()))
+        }
+    }
+
+    pub fn read_packages(&'a mut self) -> Result<Option<Vec<String>>> {
         self.cmd.stdout(Stdio::piped()).stderr(Stdio::piped());
 
         // Wait for https://github.com/rust-lang/rust/issues/44434
@@ -55,7 +73,10 @@ impl<'a> Output<'a> {
         let out = BufReader::new(stdout);
         let mut out_lines: Vec<String> = Vec::new();
         out.lines().for_each(|line| {
-            out_lines.push(line.unwrap());
+            let line = line.unwrap_or_default();
+            if !line.is_empty() {
+                out_lines.push(line);
+            }
         });
         if out_lines.is_empty() {
             None
@@ -68,7 +89,7 @@ impl<'a> Output<'a> {
         let err = BufReader::new(stderr);
         let mut err_lines = String::new();
         err.lines().for_each(|line| {
-            err_lines.push_str(line.unwrap().as_str());
+            err_lines.push_str(line.unwrap_or_default().as_str());
         });
         if err_lines.is_empty() {
             None
