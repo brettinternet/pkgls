@@ -4,7 +4,7 @@
 [![Test](https://github.com/brettinternet/pkgls/actions/workflows/test.yml/badge.svg)](https://github.com/brettinternet/pkgls/actions/workflows/test.yml)
 [![Audit](https://github.com/brettinternet/pkgls/actions/workflows/audit.yml/badge.svg)](https://github.com/brettinternet/pkgls/actions/workflows/audit.yml)
 
-List installed packages.
+Manage a list of installed packages for your distribution.
 
 Supported package managers include:
 
@@ -20,12 +20,13 @@ USAGE:
 OPTIONS:
     -h, --help                 Prints help information
     -l, --log                  Increment a log level
-    -p, --program <program>    Explicitly set which package manager to use
+    -p, --program <program>    Explicitly set which package manager to use [possible values: pacman]
     -q, --quiet                Silence stdout and stderr
     -V, --version              Prints version information
 
 SUBCOMMANDS:
-    list    List installed packages or save to file
+    install    Install packages from input or a file
+    list       List installed packages or save to file
 ```
 
 ## Develop
