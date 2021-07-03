@@ -1,5 +1,5 @@
 use super::output::Output;
-use super::{Installed, ListInstalled};
+use super::{Installed, PackageList, PackageManagerCmds};
 use crate::error::*;
 use std::process::Command;
 
@@ -17,11 +17,20 @@ impl PacmanCmd {
     }
 }
 
-impl ListInstalled for PacmanCmd {
+impl PackageManagerCmds for PacmanCmd {
     fn list_installed(&self) -> Result<Option<Installed>> {
         let program = self.program;
         let mut cmd = Command::new(program);
         cmd.arg("-Qeq");
-        Output::new(&mut cmd, program).read()
+        Output::new(&mut cmd, program).read_packages()
+    }
+
+    fn install(&self, package_list: PackageList) -> Result<()> {
+        let program = self.program;
+        let mut cmd = Command::new(program);
+        cmd.arg("-Syu");
+        cmd.args(&package_list);
+        Output::new(&mut cmd, program).interact()?;
+        Ok(())
     }
 }
