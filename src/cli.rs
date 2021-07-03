@@ -1,4 +1,5 @@
 use crate::app::Procedure;
+use crate::io::{Input, Output};
 use crate::logger::filter_level_occurences;
 use clap::{App, AppSettings, Arg, ArgMatches};
 use log::LevelFilter;
@@ -61,9 +62,10 @@ impl Cli {
             )
             .subcommand(
                 App::new("list")
+                    .alias("show")
                     .about("List installed packages or save to file")
                     .arg(
-                        Arg::new("OUTPUT")
+                        Arg::new("output")
                             .index(1)
                             .about("Filename to write package names"),
                     )
@@ -71,8 +73,29 @@ impl Cli {
                         Arg::new("force")
                             .short('f')
                             .long("force")
-                            .requires("OUTPUT")
+                            .requires("output")
                             .about("Force overwrite the output if it already exists"),
+                    ),
+            )
+            .subcommand(
+                App::new("install")
+                    .alias("add")
+                    .about("Install packages from input or a file")
+                    .arg(
+                        Arg::new("packages")
+                            .index(1)
+                            .about("Package names to install")
+                            .multiple(true)
+                            .min_values(1)
+                            .conflicts_with("input"),
+                    )
+                    .arg(
+                        Arg::new("input")
+                            .short('i')
+                            .long("input")
+                            .about("Packages to read from a file")
+                            .conflicts_with("packages")
+                            .takes_value(true),
                     ),
             );
 
@@ -84,18 +107,39 @@ impl Cli {
     ///
     /// Derive the procedure from the subcommands
     pub fn get_procedure(&self) -> Procedure {
-        if self.matches.is_present("add") {
+        if self.matches.is_present("list") {
             Procedure::List
+        } else if self.matches.is_present("install") {
+            Procedure::Install
         } else {
-            debug!("Running 'list' subcommand by default");
+            info!("Running 'list' subcommand by default");
             Procedure::List
         }
     }
 
     /// Output filename
-    pub fn get_output(&self) -> Option<&str> {
+    pub fn get_output(&self) -> Option<Output> {
         if let Some(list_matches) = self.matches.subcommand_matches("list") {
-            list_matches.value_of("output")
+            Some(Output::new(list_matches.value_of("output")))
+        } else {
+            None
+        }
+    }
+
+    /// Output filename
+    pub fn get_input(&self) -> Option<Input> {
+        if let Some(list_matches) = self.matches.subcommand_matches("install") {
+            if let Some(list) = list_matches.values_of("packages") {
+                Some(Input::from_list(list.map(str::to_string).collect()))
+            } else if let Some(filename) = list_matches.value_of("input") {
+                let file_result = Input::from_file(filename).ok();
+                if file_result.is_none() {
+                    error!("Unable to read file '{}'", filename);
+                }
+                file_result
+            } else {
+                None
+            }
         } else {
             None
         }
