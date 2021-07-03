@@ -1,4 +1,4 @@
-use crate::cmd::{pacman::PacmanCmd, ListInstalled};
+use crate::cmd::{pacman::PacmanCmd, PackageManagerCmds};
 use crate::error::*;
 use std::boxed::Box;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
@@ -16,18 +16,6 @@ impl Display for ManagerKind {
     }
 }
 
-impl Debug for dyn ListInstalled {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        write!(f, "{}", self)
-    }
-}
-
-impl Display for dyn ListInstalled {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        write!(f, "{}", self)
-    }
-}
-
 /// Convert string to kind enum
 impl FromStr for ManagerKind {
     type Err = ();
@@ -39,7 +27,7 @@ impl FromStr for ManagerKind {
     }
 }
 
-fn get_cmd(kind: ManagerKind) -> Box<dyn ListInstalled> {
+fn get_cmd(kind: ManagerKind) -> Box<dyn PackageManagerCmds> {
     match kind {
         ManagerKind::Pacman => Box::new(PacmanCmd::new()),
     }
@@ -74,7 +62,7 @@ fn get_manager_kind() -> Result<ManagerKind> {
 #[derive(Debug)]
 pub struct Manager {
     pub kind: ManagerKind,
-    pub cmd: Box<dyn ListInstalled>,
+    pub cmd: Box<dyn PackageManagerCmds>,
 }
 
 impl Manager {
