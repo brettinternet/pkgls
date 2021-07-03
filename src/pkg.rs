@@ -75,7 +75,7 @@ impl Pkg {
                     Ok(())
                 }
                 Err(_) => {
-                    info!(
+                    debug!(
                         "Checking installed packages to determine which packages failed to install"
                     );
                     self.update_installed()?;
