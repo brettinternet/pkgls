@@ -49,7 +49,7 @@ impl Pkg {
         self
     }
 
-    pub fn eval_difference(&mut self, list: Vec<String>) {
+    fn set_missing<'a>(&'a mut self, list: Vec<String>) -> &'a mut Self {
         let missing = if let Some(installed) = self.installed.clone() {
             list.into_iter()
                 .filter(|item| !installed.contains(item))
@@ -57,16 +57,12 @@ impl Pkg {
         } else {
             list
         };
-        self.set_missing(Some(missing));
-    }
-
-    fn set_missing<'a>(&'a mut self, missing: Option<PackageList>) -> &'a mut Self {
-        self.missing = missing;
+        self.missing = Some(missing);
         self
     }
 
     pub fn install_missing(&mut self, list: Vec<String>) -> Result<()> {
-        self.eval_difference(list.clone());
+        self.set_missing(list.clone());
         match self.missing.clone() {
             Some(missing) if !missing.is_empty() => match self.manager.cmd.install(missing.clone())
             {
@@ -79,7 +75,7 @@ impl Pkg {
                         "Checking installed packages to determine which packages failed to install"
                     );
                     self.update_installed()?;
-                    self.eval_difference(list.clone());
+                    self.set_missing(list.clone());
                     match self.missing.clone() {
                         Some(missing) if missing.len() == list.len() => {
                             debug!("No missing packages were installed");
