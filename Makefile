@@ -1,5 +1,5 @@
 #!make
-.PHONY: start setup clean test build
+.PHONY: start setup clean test build release
 
 start:
 	@PKGLS_LOG=debug cargo watch -x build
@@ -16,3 +16,6 @@ test:
 
 build:
 	@cargo build
+
+release:
+	@cargo build --release
