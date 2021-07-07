@@ -28,8 +28,7 @@ fn main() {
     let quiet = cli.get_quiet();
     let procedure = cli.get_procedure();
     let (input, output): (Option<Input>, Option<Output>) = match procedure {
-        Procedure::List => (None, cli.get_output()),
-        Procedure::Install => (cli.get_input(), None),
+        Procedure::Install => (cli.get_install_input(), None),
     };
     let config = Config {
         log_level: cli.get_log_level(),
@@ -41,6 +40,7 @@ fn main() {
         output,
         input,
     };
+    #[cfg(debug_assertions)]
     println!("config: {:?}", config);
 
     match run(config) {

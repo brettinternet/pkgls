@@ -1,9 +1,10 @@
 use crate::app::Procedure;
 use crate::io::{Input, Output};
 use crate::logger::filter_level_occurences;
-use clap::{App, AppSettings, Arg, ArgMatches};
+use clap::{App, AppSettings, Arg, ArgMatches, Values};
 use log::LevelFilter;
 use std::env;
+use std::path::Path;
 
 /// Cli input parsed by Clap and associated input interpreters
 #[derive(Debug)]
@@ -95,6 +96,7 @@ impl Cli {
                             .long("input")
                             .about("Packages to read from a file")
                             .conflicts_with("packages")
+                            .multiple(true)
                             .takes_value(true),
                     ),
             );
@@ -126,21 +128,65 @@ impl Cli {
         }
     }
 
-    /// Output filename
-    pub fn get_input(&self) -> Option<Input> {
+    /// Collect input from multiple or single file input
+    ///
+    /// Used for both install and list inputs
+    fn get_file_input(&self, filenames: Values) -> Option<Input> {
+        let filenames: Vec<String> = filenames.map(str::to_string).collect();
+        if let Some(first_filename) = filenames.first() {
+            let input = Input::from_file(first_filename.to_string()).ok();
+            let mut packages = Vec::new();
+            for s in &filenames {
+                let subinput = Input::from_file(s.to_string()).ok();
+                if let Some(mut subinput) = subinput {
+                    packages.append(&mut subinput.list);
+                    continue;
+                } else {
+                    error!("Unable to read file '{}'", s);
+                }
+            }
+            if let Some(mut first_input) = input.clone() {
+                first_input.append_list(packages);
+                Some(first_input)
+            } else {
+                error!("Unable to read file '{}'", first_filename);
+                input
+            }
+        } else {
+            warn!("No files received in input");
+            None
+        }
+    }
+    /// Input filename or packages
+    pub fn get_install_input(&self) -> Option<Input> {
         if let Some(list_matches) = self.matches.subcommand_matches("install") {
             if let Some(list) = list_matches.values_of("packages") {
-                Some(Input::from_list(list.map(str::to_string).collect()))
-            } else if let Some(filename) = list_matches.value_of("input") {
-                let file_result = Input::from_file(filename).ok();
-                if file_result.is_none() {
-                    error!("Unable to read file '{}'", filename);
+                let list: Vec<String> = list.map(str::to_string).collect();
+                let mut packages = Vec::new();
+                for s in &list {
+                    // Probably shouldn't let users cheat by allowing packages or filename input here...
+                    if Path::new(s).exists() {
+                        let subinput = Input::from_file(s.to_string()).ok();
+                        if let Some(mut subinput) = subinput {
+                            packages.append(&mut subinput.list);
+                            continue;
+                        }
+                    };
+                    packages.push(s.to_string());
                 }
-                file_result
+                if packages.is_empty() {
+                    warn!("No packages received in input");
+                }
+                let input = Input::from_list(packages);
+                Some(input)
+            } else if let Some(filenames) = list_matches.values_of("input") {
+                self.get_file_input(filenames)
             } else {
+                warn!("No files received in input");
                 None
             }
         } else {
+            warn!("No files received in input");
             None
         }
     }
