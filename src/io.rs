@@ -88,10 +88,14 @@ fn read<'a>(filename: &'a str) -> Result<Vec<String>> {
     let reader = BufReader::new(file);
     let mut file_lines: Vec<String> = Vec::new();
     reader.lines().for_each(|line| {
-        let line = line.unwrap_or_default();
+        let mut line = line.unwrap_or_default();
         let first_char = line.chars().next();
         if first_char != "#".chars().next() && !line.is_empty() {
-            file_lines.push(line);
+            let inner_comment_index = line.chars().position(|c| c == '#');
+            if let Some(inner_comment_index) = inner_comment_index {
+                line = line.chars().skip(0).take(inner_comment_index).collect();
+            }
+            file_lines.push(line.trim().to_string());
         }
     });
     Ok(file_lines)
