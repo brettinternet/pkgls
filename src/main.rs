@@ -30,6 +30,7 @@ fn main() {
     let (input, output): (Option<Input>, Option<Output>) = match procedure {
         Procedure::List => (cli.get_list_input(), cli.get_output()),
         Procedure::Install => (cli.get_install_input(), None),
+        Procedure::Test => (None, None),
     };
     let config = Config {
         log_level: cli.get_log_level(),
@@ -58,20 +59,24 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::run;
+    use crate::app::Procedure;
     use crate::config::Config;
-    use crate::io::Output;
     use log::LevelFilter;
 
     #[test]
-    fn runs() {
+    fn runs_app() {
         let config = Config {
-            output: Some(Output::new(None)),
             log_level: LevelFilter::Debug,
+            procedure: Procedure::Test,
             ..Default::default()
         };
-        assert!(
-            run(config).is_ok(),
-            "Failed to initialize app with defaults"
-        );
+        match run(config) {
+            Ok(good) => assert!(
+                good,
+                "Failed to initialize app with defaults; returned: {}",
+                good
+            ),
+            Err(err) => panic!("Failed to run app with defaults:\n{:?}", err),
+        }
     }
 }

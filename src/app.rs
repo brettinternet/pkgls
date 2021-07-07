@@ -7,6 +7,8 @@ use crate::logger::CliLogger;
 pub enum Procedure {
     List,
     Install,
+    #[allow(dead_code)]
+    Test,
 }
 
 pub struct App<'a> {
@@ -50,6 +52,7 @@ impl<'a> App<'a> {
                     Ok(false)
                 }
             }
+            Procedure::Test => Ok(true),
         }
     }
 }
