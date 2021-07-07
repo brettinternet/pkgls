@@ -98,3 +98,25 @@ impl<'a> Output<'a> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Output;
+    use std::process::Command;
+
+    #[test]
+    fn output_lists_lines_into_vector() {
+        let program = "printf";
+        let mut cmd = Command::new(program);
+        let packages = ["a", "b"];
+        cmd.arg(&packages.join("\n"));
+        let output = Output::new(&mut cmd, program).read_packages();
+        assert!(output.is_ok());
+        let expected_output: Vec<String> = packages.iter().map(|s| s.to_string()).collect();
+        assert_eq!(
+            output.unwrap(),
+            Some(expected_output),
+            "Failed to parse output from command"
+        );
+    }
+}
