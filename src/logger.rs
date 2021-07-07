@@ -83,15 +83,3 @@ pub fn filter_level_occurences(count: u64) -> LevelFilter {
         _ => LevelFilter::Debug,
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::CliLogger;
-    use log::LevelFilter;
-
-    #[test]
-    fn inits_logger() {
-        let log_init = CliLogger::init(&LevelFilter::Debug);
-        assert!(log_init.is_ok(), "Failed to initialize logger");
-    }
-}
