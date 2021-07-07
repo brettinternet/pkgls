@@ -60,11 +60,13 @@ mod tests {
     use super::run;
     use crate::config::Config;
     use crate::io::Output;
+    use log::LevelFilter;
 
     #[test]
     fn runs() {
         let config = Config {
             output: Some(Output::new(None)),
+            log_level: LevelFilter::Debug,
             ..Default::default()
         };
         assert!(
