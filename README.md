@@ -29,6 +29,8 @@ SUBCOMMANDS:
     list       List installed packages or save to file
 ```
 
+See [example.txt](test/example.txt) for a sample input file.
+
 ## Develop
 
 ### Requirements
