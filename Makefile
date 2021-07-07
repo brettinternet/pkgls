@@ -1,5 +1,5 @@
 #!make
-.PHONY: start setup clean lint
+.PHONY: start setup clean test build
 
 start:
 	@PKGLS_LOG=debug cargo watch -x build
