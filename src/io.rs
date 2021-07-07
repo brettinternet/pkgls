@@ -66,7 +66,6 @@ impl<'a> Output<'a> {
     }
 }
 
-/// TODO: implement input
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub enum InputFormat {
@@ -102,12 +101,9 @@ fn read<'a>(filename: &'a str) -> Result<Vec<String>> {
 }
 
 #[derive(Debug, Clone)]
-pub struct Input<'a> {
+pub struct Input {
     /// Input format type
     pub format: InputFormat,
-
-    /// Files to read from
-    pub filename: Option<&'a str>,
 
     /// Package list to read from
     pub list: Vec<String>,
@@ -115,23 +111,35 @@ pub struct Input<'a> {
 
 /// TODO: implement input
 #[allow(dead_code)]
-impl<'a> Input<'a> {
-    pub fn from_file(filename: &'a str) -> Result<Self> {
-        let list = read(filename)?;
+impl Input {
+    pub fn from_file(filename: String) -> Result<Self> {
+        let list = read(&filename)?;
         let input = Self {
-            format: parse_input_format(filename),
-            filename: Some(filename),
+            format: parse_input_format(&filename),
             list,
         };
         Ok(input)
     }
 
-    pub fn from_list(list: Vec<String>) -> Self {
+    pub fn from_list(mut list: Vec<String>) -> Self {
+        list.sort();
+        list.dedup();
         Self {
             format: InputFormat::Stdin,
-            filename: None,
             list,
         }
+    }
+
+    pub fn append_list(&mut self, list: Vec<String>) {
+        let mut list = [&self.list[..], &list[..]].concat();
+        list.sort();
+        list.dedup();
+        &self.set_list(list);
+    }
+
+    fn set_list(&mut self, list: Vec<String>) -> &mut Self {
+        self.list = list;
+        self
     }
 }
 

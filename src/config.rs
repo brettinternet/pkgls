@@ -28,5 +28,5 @@ pub struct Config<'a> {
     pub output: Option<Output<'a>>,
 
     /// Input
-    pub input: Option<Input<'a>>,
+    pub input: Option<Input>,
 }
