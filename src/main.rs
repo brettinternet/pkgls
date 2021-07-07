@@ -56,3 +56,20 @@ fn main() {
         Ok(true) => process::exit(0),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::run;
+    use crate::config::Config;
+
+    #[test]
+    fn runs() {
+        let config = Config {
+            ..Default::default()
+        };
+        assert!(
+            run(config).is_ok(),
+            "Failed to initialize app with defaults"
+        );
+    }
+}

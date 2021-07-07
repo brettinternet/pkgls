@@ -30,3 +30,18 @@ pub struct Config<'a> {
     /// Input
     pub input: Option<Input>,
 }
+
+impl<'a> Default for Config<'a> {
+    fn default() -> Self {
+        Self {
+            log_level: LevelFilter::Off,
+            quiet: false,
+            force: false,
+            color: true,
+            program: None,
+            procedure: Procedure::List,
+            output: None,
+            input: None,
+        }
+    }
+}
