@@ -1,0 +1,5 @@
+# this is a commented line
+bat # mid-line comments are also acceptable
+lsd
+broot
+broot # duplicates will be ignored
