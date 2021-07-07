@@ -97,6 +97,8 @@ fn read<'a>(filename: &'a str) -> Result<Vec<String>> {
             file_lines.push(line.trim().to_string());
         }
     });
+    file_lines.sort();
+    file_lines.dedup();
     Ok(file_lines)
 }
 
