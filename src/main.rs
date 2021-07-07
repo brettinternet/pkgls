@@ -59,10 +59,12 @@ fn main() {
 mod tests {
     use super::run;
     use crate::config::Config;
+    use crate::io::Output;
 
     #[test]
     fn runs() {
         let config = Config {
+            output: Some(Output::new(None)),
             ..Default::default()
         };
         assert!(
