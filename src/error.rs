@@ -45,3 +45,23 @@ pub fn default_error_handler(error: &Error, output: &mut dyn Write) {
         }
     };
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Test stderr output
+    ///
+    /// https://stackoverflow.com/a/28370712/6817437, https://stackoverflow.com/a/48393114
+    #[test]
+    fn writes_stderr() {
+        let err_result: Result<()> = Err(ErrorKind::Msg("Uh oh".to_string()).into());
+        assert!(err_result.is_err());
+        if let Err(err) = err_result {
+            let mut stderr = Vec::new();
+            default_error_handler(&err, &mut stderr);
+            let output = String::from_utf8(stderr).expect("Not UTF-8");
+            assert_eq!(output, "Uh oh\n");
+        }
+    }
+}
