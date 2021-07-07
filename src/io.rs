@@ -7,7 +7,7 @@ use std::io::{BufRead, BufReader, BufWriter};
 use std::path::Path;
 
 /// TODO: support toml, yml, json
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum OutputFormat {
     /// Print output to console
     Stdout,
@@ -66,8 +66,7 @@ impl<'a> Output<'a> {
     }
 }
 
-#[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum InputFormat {
     /// Print output to console
     Stdin,
@@ -194,5 +193,44 @@ fn parse_input_format(filename: &str) -> InputFormat {
             );
             InputFormat::Txt
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Input, InputFormat};
+    use std::path::Path;
+
+    #[test]
+    fn input_list_sorts_and_removes_duplicates() {
+        let list: Vec<String> = vec!["a".into(), "c".into(), "b".into()];
+        let mut duped_list = list.clone();
+        duped_list.push("a".into());
+        let input = Input::from_list(duped_list);
+        let expected_list: Vec<String> = vec!["a".into(), "b".into(), "c".into()];
+        assert_eq!(input.list, expected_list);
+        assert_eq!(input.format, InputFormat::Stdin);
+    }
+
+    #[test]
+    fn input_reads_file_sorts_and_removes_duplicates() {
+        let test_file = "test/example.txt";
+        let path = Path::new(test_file);
+        assert!(path.exists(), "Missing test input file");
+        let input = Input::from_file(test_file.into());
+        assert!(input.is_ok(), "Failed to create input");
+        let input = input.unwrap();
+        assert_eq!(input.format, InputFormat::Txt);
+        let expected_list: Vec<String> = vec!["bat".into(), "broot".into(), "lsd".into()];
+        assert_eq!(input.list, expected_list);
+    }
+
+    #[test]
+    fn input_appends_list() {
+        let list: Vec<String> = vec!["a".into(), "c".into(), "b".into()];
+        let mut input = Input::from_list(list);
+        input.append_list(vec!["d".into()]);
+        let expected_list: Vec<String> = vec!["a".into(), "b".into(), "c".into(), "d".into()];
+        assert_eq!(input.list, expected_list);
     }
 }
