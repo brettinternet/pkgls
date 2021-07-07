@@ -53,7 +53,7 @@ impl<'a> Output<'a> {
                 }
                 (None, Some(stderr)) => Err(ErrorKind::InterruptedManager(
                     self.read_stderr(stderr)
-                        .unwrap_or("Unable to read stderr of command".to_string()),
+                        .unwrap_or_else(|| "Unable to read stderr of command".to_string()),
                 )
                 .into()),
                 _ => Ok(None),

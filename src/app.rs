@@ -16,10 +16,9 @@ pub struct App<'a> {
 
 impl<'a> App<'a> {
     pub fn new(config: Config<'a>) -> Result<Self> {
-        match CliLogger::init(&config.log_level) {
-            Err(_) => println!("Failed to initialize logging"),
-            _ => (),
-        };
+        if CliLogger::init(&config.log_level).is_err() {
+            println!("Failed to initialize logging");
+        }
         #[cfg(debug_assertions)]
         debug!("config: {:?}", config);
         let mut controller = Controller::new()?;

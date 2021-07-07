@@ -81,7 +81,7 @@ impl Display for InputFormat {
     }
 }
 
-fn read<'a>(filename: &'a str) -> Result<Vec<String>> {
+fn read(filename: &str) -> Result<Vec<String>> {
     let file = OpenOptions::new().read(true).open(Path::new(filename))?;
     let reader = BufReader::new(file);
     let mut file_lines: Vec<String> = Vec::new();
@@ -135,7 +135,7 @@ impl Input {
         let mut list = [&self.list[..], &list[..]].concat();
         list.sort();
         list.dedup();
-        &self.set_list(list);
+        self.set_list(list);
     }
 
     fn set_list(&mut self, list: Vec<String>) -> &mut Self {

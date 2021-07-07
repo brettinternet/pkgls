@@ -38,7 +38,7 @@ fn get_cmd(kind: ManagerKind) -> Box<dyn PackageManagerCmds> {
 /// Source: https://stackoverflow.com/a/35046243
 fn is_program_in_path(program: &str) -> bool {
     if let Ok(path) = env::var("PATH") {
-        for p in path.split(":") {
+        for p in path.split(':') {
             let formatted_path = format!("{}/{}", p, program);
             if fs::metadata(formatted_path).is_ok() {
                 return true;
@@ -76,7 +76,7 @@ impl Manager {
     }
 
     /// Set manager kind
-    fn set_kind<'a>(&'a mut self, kind: ManagerKind) -> &'a mut Self {
+    fn set_kind(&mut self, kind: ManagerKind) -> &mut Self {
         self.kind = kind;
         self.cmd = get_cmd(kind);
         self

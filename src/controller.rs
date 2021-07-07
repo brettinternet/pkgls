@@ -1,7 +1,6 @@
 use crate::error::*;
 use crate::io::{Input, Output};
 use crate::pkg::Pkg;
-use std::iter::FromIterator;
 
 pub struct Controller {
     pub pkg: Pkg,
@@ -29,14 +28,14 @@ impl Controller {
                 .into_iter()
                 .enumerate()
                 .map(|(i, s)| s + if i != last_index { "\n" } else { "" });
-            let content = String::from_iter(installed_new_lines);
+            let content = installed_new_lines.collect::<String>();
             output.write(content, force)
         } else {
             Err(ErrorKind::PackagesNotFound(self.pkg.manager.get_kind_lowercase()).into())
         }
     }
 
-    pub fn install<'a>(&mut self, input: &Input) -> Result<()> {
+    pub fn install(&mut self, input: &Input) -> Result<()> {
         self.pkg.install_missing(input.list.clone())?;
         Ok(())
     }

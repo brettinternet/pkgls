@@ -41,8 +41,6 @@ fn main() {
         output,
         input,
     };
-    #[cfg(debug_assertions)]
-    println!("config: {:?}", config);
 
     match run(config) {
         Err(error) => {

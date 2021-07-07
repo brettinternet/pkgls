@@ -44,12 +44,12 @@ impl Pkg {
         Ok(())
     }
 
-    fn set_installed<'a>(&'a mut self, installed: Option<Vec<String>>) -> &'a mut Self {
+    fn set_installed(&mut self, installed: Option<Vec<String>>) -> &mut Self {
         self.installed = installed;
         self
     }
 
-    fn set_missing<'a>(&'a mut self, list: Vec<String>) -> &'a mut Self {
+    fn set_missing(&mut self, list: Vec<String>) -> &mut Self {
         let missing = if let Some(installed) = self.installed.clone() {
             list.into_iter()
                 .filter(|item| !installed.contains(item))

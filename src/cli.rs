@@ -129,11 +129,9 @@ impl Cli {
 
     /// Output filename
     pub fn get_output(&self) -> Option<Output> {
-        if let Some(list_matches) = self.matches.subcommand_matches("list") {
-            Some(Output::new(list_matches.value_of("output")))
-        } else {
-            None
-        }
+        self.matches
+            .subcommand_matches("list")
+            .map(|list_matches| Output::new(list_matches.value_of("output")))
     }
 
     /// Collect input from multiple or single file input
