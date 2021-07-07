@@ -1,4 +1,3 @@
-use crate::config::Config;
 use env_logger::filter::{Builder, Filter};
 use log::{LevelFilter, Log, Metadata, Record, SetLoggerError};
 use std::boxed::Box;
@@ -13,8 +12,7 @@ pub struct CliLogger {
 
 /// TODO: use colored output from https://github.com/env-logger-rs/env_logger
 impl CliLogger {
-    fn new(config: &Config) -> Self {
-        let Config { log_level, .. } = config;
+    fn new(log_level: &LevelFilter) -> Self {
         let mut builder = Builder::new();
 
         // Use println! macro since logger isn't available yet
@@ -41,8 +39,8 @@ impl CliLogger {
         }
     }
 
-    pub fn init(config: &Config) -> Result<(), SetLoggerError> {
-        let logger = Self::new(config);
+    pub fn init(log_level: &LevelFilter) -> Result<(), SetLoggerError> {
+        let logger = Self::new(log_level);
         let level = logger.inner.filter();
 
         #[cfg(debug_assertions)]

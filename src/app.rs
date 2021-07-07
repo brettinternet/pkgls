@@ -16,7 +16,7 @@ pub struct App<'a> {
 
 impl<'a> App<'a> {
     pub fn new(config: Config<'a>) -> Result<Self> {
-        match CliLogger::init(&config) {
+        match CliLogger::init(&config.log_level) {
             Err(_) => println!("Failed to initialize logging"),
             _ => (),
         };
