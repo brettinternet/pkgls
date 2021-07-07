@@ -76,6 +76,14 @@ impl Cli {
                             .long("force")
                             .requires("output")
                             .about("Force overwrite the output if it already exists"),
+                    )
+                    .arg(
+                        Arg::new("input")
+                            .short('i')
+                            .long("input")
+                            .about("Packages to filter output from a file")
+                            .multiple(true)
+                            .takes_value(true),
                     ),
             )
             .subcommand(
@@ -157,6 +165,20 @@ impl Cli {
             None
         }
     }
+
+    /// Input filename or packages to filter installed list
+    pub fn get_list_input(&self) -> Option<Input> {
+        if let Some(list_matches) = self.matches.subcommand_matches("list") {
+            if let Some(filenames) = list_matches.values_of("input") {
+                self.get_file_input(filenames)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
     /// Input filename or packages
     pub fn get_install_input(&self) -> Option<Input> {
         if let Some(list_matches) = self.matches.subcommand_matches("install") {

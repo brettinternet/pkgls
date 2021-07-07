@@ -14,8 +14,16 @@ impl Controller {
         Ok(ctrl)
     }
 
-    pub fn dump<'a>(&self, output: &Output<'a>, force: bool) -> Result<()> {
+    pub fn dump<'a>(&self, input: &Option<Input>, output: &Output<'a>, force: bool) -> Result<()> {
         if let Some(installed) = self.pkg.installed.clone() {
+            let installed = if let Some(input) = input {
+                installed
+                    .into_iter()
+                    .filter(|item| !input.list.contains(item))
+                    .collect()
+            } else {
+                installed
+            };
             let last_index = installed.len() - 1;
             let installed_new_lines = installed
                 .into_iter()
@@ -28,7 +36,7 @@ impl Controller {
         }
     }
 
-    pub fn install<'a>(&mut self, input: &Input<'a>) -> Result<()> {
+    pub fn install<'a>(&mut self, input: &Input) -> Result<()> {
         self.pkg.install_missing(input.list.clone())?;
         Ok(())
     }

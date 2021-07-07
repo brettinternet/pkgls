@@ -34,10 +34,11 @@ impl<'a> App<'a> {
         match self.config.procedure {
             Procedure::List => {
                 if let Some(output) = &self.config.output {
-                    self.controller.dump(output, self.config.force)?;
+                    self.controller
+                        .dump(&self.config.input, output, self.config.force)?;
                     Ok(true)
                 } else {
-                    error!("Missing output file from list subcommand");
+                    error!("Missing output from list subcommand");
                     Ok(false)
                 }
             }
@@ -46,7 +47,7 @@ impl<'a> App<'a> {
                     self.controller.install(input)?;
                     Ok(true)
                 } else {
-                    error!("Missing input file from install subcommand");
+                    error!("Missing input from install subcommand");
                     Ok(false)
                 }
             }

@@ -28,6 +28,7 @@ fn main() {
     let quiet = cli.get_quiet();
     let procedure = cli.get_procedure();
     let (input, output): (Option<Input>, Option<Output>) = match procedure {
+        Procedure::List => (cli.get_list_input(), cli.get_output()),
         Procedure::Install => (cli.get_install_input(), None),
     };
     let config = Config {
