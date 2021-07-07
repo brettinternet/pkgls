@@ -64,6 +64,7 @@ mod tests {
     use log::LevelFilter;
 
     #[test]
+    #[ignore]
     fn runs_app() {
         let config = Config {
             log_level: LevelFilter::Debug,
