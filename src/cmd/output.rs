@@ -75,7 +75,7 @@ impl<'a> Output<'a> {
         out.lines().for_each(|line| {
             let line = line.unwrap_or_default();
             if !line.is_empty() {
-                out_lines.push(line);
+                out_lines.push(line.trim().to_string());
             }
         });
         if out_lines.is_empty() {
