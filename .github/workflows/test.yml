@@ -47,3 +47,4 @@ jobs:
           command: test
         env:
           PKGLS_LOG: debug
+          RUST_BACKTRACE: 1
