@@ -15,8 +15,7 @@ Supported package managers include:
 
 ```
 USAGE:
-    pkgls [OPTIONS]
-    pkgls <SUBCOMMAND>
+    pkgls [OPTIONS] <SUBCOMMAND>
 
 OPTIONS:
     -h, --help                 Prints help information
