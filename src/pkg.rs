@@ -64,41 +64,46 @@ impl Pkg {
     pub fn install_missing(&mut self, list: Vec<String>) -> Result<()> {
         self.set_missing(list.clone());
         match self.missing.clone() {
-            Some(missing) if !missing.is_empty() => match self.manager.cmd.install(missing.clone())
-            {
-                Ok(_) => {
-                    info!("Successfully installed packages: {}", missing.join(" "));
-                    Ok(())
-                }
-                Err(_) => {
-                    debug!(
+            Some(missing) if !missing.is_empty() => {
+                debug!("Installing packages: {}", missing.clone().join(" "));
+                match self.manager.cmd.install(missing.clone()) {
+                    Ok(_) => {
+                        info!("Successfully installed packages: {}", missing.join(" "));
+                        Ok(())
+                    }
+                    Err(_) => {
+                        debug!(
                         "Checking installed packages to determine which packages failed to install"
                     );
-                    self.update_installed()?;
-                    self.set_missing(list.clone());
-                    match self.missing.clone() {
-                        Some(missing) if missing.len() == list.len() => {
-                            debug!("No missing packages were installed");
-                            Err(
-                                ErrorKind::InterruptedManager("Installation cancelled".into())
-                                    .into(),
-                            )
-                        }
-                        Some(missing) if !missing.is_empty() => {
-                            warn!("Cannot find missing packages after the attempted installation");
-                            Err(ErrorKind::FailedManager(format!(
-                                "Failed to install packages: {}",
-                                missing.join(" ")
-                            ))
-                            .into())
-                        }
-                        _ => {
-                            warn!("Cannot find missing packages");
-                            Err(ErrorKind::InterruptedManager("Installation failed".into()).into())
+                        self.update_installed()?;
+                        self.set_missing(list.clone());
+                        match self.missing.clone() {
+                            Some(missing) if missing.len() == list.len() => {
+                                debug!("No missing packages were installed");
+                                Err(
+                                    ErrorKind::InterruptedManager("Installation cancelled".into())
+                                        .into(),
+                                )
+                            }
+                            Some(missing) if !missing.is_empty() => {
+                                warn!(
+                                    "Cannot find missing packages after the attempted installation"
+                                );
+                                Err(ErrorKind::FailedManager(format!(
+                                    "Failed to install packages: {}",
+                                    missing.join(" ")
+                                ))
+                                .into())
+                            }
+                            _ => {
+                                warn!("Cannot find missing packages");
+                                Err(ErrorKind::InterruptedManager("Installation failed".into())
+                                    .into())
+                            }
                         }
                     }
                 }
-            },
+            }
             _ => {
                 warn!("No missing packages found to install");
                 Ok(())
