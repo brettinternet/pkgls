@@ -37,6 +37,8 @@ impl Controller {
 
     pub fn install(&mut self, input: &Input) -> Result<()> {
         self.pkg.install_missing(input.list.clone())?;
+        debug!("Running post install filters");
+        self.manager.cmd.post_install_filters(package_list, options);
         Ok(())
     }
 }

@@ -1,5 +1,5 @@
 use super::output::Output;
-use super::{Installed, PackageList, PackageManagerCmds};
+use super::{FilterOptions, Installed, PackageList, PackageManagerCmds};
 use crate::error::*;
 use std::process::Command;
 
@@ -27,10 +27,24 @@ impl PackageManagerCmds for PacmanCmd {
 
     fn install(&self, package_list: PackageList) -> Result<()> {
         let program = self.program;
-        let mut cmd = Command::new(program);
-        cmd.arg("-Syu");
-        cmd.args(&package_list);
-        Output::new(&mut cmd, program).interact()?;
+        let mut install_cmd = Command::new(program);
+        install_cmd.arg("-Syu");
+        install_cmd.args(&package_list);
+        Output::new(&mut install_cmd, program).interact()?;
         Ok(())
+    }
+
+    fn post_install_filters(
+        &self,
+        mut package_list: PackageList,
+        options: FilterOptions,
+    ) -> Result<PackageList> {
+        let FilterOptions { mark_explicit } = options;
+        if mark_explicit.is_some() && mark_explicit.unwrap() {
+            let mut mark_cmd = Command::new(self.program);
+            mark_cmd.arg("-D").arg("--asexplicit");
+            mark_cmd.args(&package_list);
+        }
+        Ok(package_list)
     }
 }
