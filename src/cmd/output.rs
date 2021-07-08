@@ -21,9 +21,9 @@ impl<'a> Output<'a> {
             Ok(())
         } else {
             error!(
-                "{} command failed with exit code {:?}",
+                "{} command failed with exit code {}",
                 self.program,
-                out.status.code()
+                out.status.code().unwrap_or_default()
             );
             use std::io::{Error, ErrorKind};
             Err(Error::new(ErrorKind::Other, out.status.to_string()))
