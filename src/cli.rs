@@ -63,6 +63,7 @@ impl Cli {
             )
             .subcommand(
                 App::new("list")
+                    .alias("ls")
                     .alias("show")
                     .about("List installed packages or save to file")
                     .arg(
