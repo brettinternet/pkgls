@@ -17,7 +17,6 @@ pub struct Cli {
 }
 
 impl Cli {
-    /// TODO: support -u uninstall, -i install, -e explicitly installed filter, -v use versions
     pub fn new() -> Self {
         let color = env::var_os("NO_COLOR").is_none();
         let cli_color_setting = if color {
@@ -28,15 +27,16 @@ impl Cli {
 
         let app = App::new("pkgls")
             .version("0.2.0")
-            // .license("MIT") // unreleased
             .global_setting(cli_color_setting)
             .global_setting(AppSettings::UnifiedHelpMessage)
-            .setting(AppSettings::ArgsNegateSubcommands)
+            .setting(AppSettings::SubcommandRequiredElseHelp)
             .setting(AppSettings::DisableHelpSubcommand)
             .setting(AppSettings::VersionlessSubcommands)
+            .setting(AppSettings::SubcommandPrecedenceOverArg)
             .max_term_width(100)
-            .author("Brett (https://github.com/brettinternet/pkgls)")
+            .author("https://github.com/brettinternet/pkgls")
             .about("List installed packages")
+            .override_usage("pkgls [OPTIONS] <SUBCOMMAND>")
             .arg(
                 Arg::new("program")
                     .short('p')
@@ -67,7 +67,9 @@ impl Cli {
                     .about("List installed packages or save to file")
                     .arg(
                         Arg::new("output")
-                            .index(1)
+                            .short('o')
+                            .long("output")
+                            .takes_value(true)
                             .about("Filename to write package names"),
                     )
                     .arg(
@@ -90,6 +92,7 @@ impl Cli {
                 App::new("install")
                     .alias("add")
                     .about("Install packages from input or a file")
+                    .setting(AppSettings::ArgRequiredElseHelp)
                     .arg(
                         Arg::new("packages")
                             .index(1)
