@@ -6,6 +6,7 @@ pub struct Controller {
     pub pkg: Pkg,
 }
 
+/// TODO: print deps count, explicit install count, total, etc
 impl Controller {
     pub fn new() -> Result<Self> {
         let pkg = Pkg::init()?;
